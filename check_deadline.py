@@ -9,19 +9,32 @@ print(f"Текущая дата: {current_date.day}-{current_date.month}-{curren
 time.sleep(2)
 
 while True:
-    user_input = input("Введите дату крайнего срока (в формате день-месяц-год): ").strip()
+    # В данном случае это сильно большой текст для пользователя, но как дополнение интересное
+    # к примеру можно добавить P.S. к примечаниям, если пользователю необходим дедлайн в текущем
+    # месяце, годе, он может просто ввести число
+    user_input = input("Введите дату крайнего срока (в формате день-месяц-год)\n"
+                       "P.S. Можете ввести только день, тогда будут использоваться текущие месяц и год\n"
+                       "или ввести только день и месяц, тогда будет использоваться текущий год: ").strip()# убираю лишние пробелы
+    # Проверяем случай, если пользовательничего не ввел1
     if not user_input:
         print("Вы ничего не ввели. Попробуйте снова.")
         continue
 
+    # Убираю лишние знаки, пользователь может ввести случайно пробел или какой-1
+    # либо знак, или их сочетание, убираю их, также есть вероятность, что пользователь
+    # привык к другим разделителям даты, в любом случае обработается всё корректно,
+    # также может быть опечатка с буквой isdigit() уберёт не числовой тип данных
     issue_date_parts = re.split(r'[-. ,_:;\\/]+', user_input)
     issue_date_parts = [x for x in issue_date_parts if x.isdigit()]  # Оставляем только числовые значения
 
-    if len(issue_date_parts) == 1:  # Введён только день
+    # В случае, если введен только день, месяц и год текущие
+    if len(issue_date_parts) == 1:
         day, month, year = int(issue_date_parts[0]), current_date.month, current_date.year
-    elif len(issue_date_parts) == 2:  # Введены день и месяц
+    # В случае, если введены только день и месяц, год текущий
+    elif len(issue_date_parts) == 2:
         day, month, year = int(issue_date_parts[0]), int(issue_date_parts[1]), current_date.year
-    elif len(issue_date_parts) == 3:  # Введены день, месяц и год
+    # Введены день, месяц и год
+    elif len(issue_date_parts) == 3:
         day, month, year = map(int, issue_date_parts)
     else:
         print("Вы ввели слишком много данных. Попробуйте снова.")
@@ -32,9 +45,12 @@ while True:
         print(f"Месяц должен быть в диапазоне от 1 до 12. Вы ввели: {month}. Попробуйте снова.")
         continue
 
-    # Проверка корректности дня
+    # Проверка корректности дня, включая проверку високосного года,
+    # если is_leap_year == True => 29 дней в феврале, == False => 28
+    # изучил интересный ввод if else, получается намного меньше строчек, и читается нормально
     is_leap_year = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
     max_days = 31 if month in {1, 3, 5, 7, 8, 10, 12} else 30 if month in {4, 6, 9, 11} else (29 if is_leap_year else 28)
+    # Проверка на количество дней в месяце
     if not (1 <= day <= max_days):
         print(f"Некорректная дата. Попробуйте снова.")
         continue
@@ -49,9 +65,12 @@ while True:
 # Расчёт разницы в днях
 date_diff = (issue_date - current_date).days
 
-# Определение формы слова "день"
+# Определяю форму слова день
 day_form = "дней" if 11 <= abs(date_diff) % 100 <= 14 else "день" if abs(date_diff) % 10 == 1 else"дня" if 2 <= abs(date_diff) % 10 <= 4 else "дней"
 
+# Если разница отрицательная, то задача просрочена на date_diff дней, если положительна до задачи date_diff дней.
+# Так лучше же не делать? Тяжело читаемо 
+# print(f"Задача просрочена на {abs(date_diff)} {day_form}.") if date_diff < 0 else print(f"Крайний срок через {date_diff} {day_form}.") if date_diff >0 else print(f"Крайний срок сегодня.")
 if date_diff < 0:
     print(f"Задача просрочена на {abs(date_diff)} {day_form}.")
 elif date_diff >0:

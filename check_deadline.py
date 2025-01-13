@@ -40,6 +40,14 @@ while True:
         print("Вы ввели слишком много данных. Попробуйте снова.")
         continue
 
+    # Проверка формата даты
+    issue_date = f"{day}-{month}-{year}"
+    if re.match(r"^\d{1,2}-\d{1,2}-\d{4}$", issue_date):
+        print("Дата соответствует формату")
+    else:
+        print("Некорректный формат даты")
+        continue
+
     # Проверка корректности месяца
     if not (1 <= month <= 12):
         print(f"Месяц должен быть в диапазоне от 1 до 12. Вы ввели: {month}. Попробуйте снова.")
@@ -69,7 +77,7 @@ date_diff = (issue_date - current_date).days
 day_form = "дней" if 11 <= abs(date_diff) % 100 <= 14 else "день" if abs(date_diff) % 10 == 1 else"дня" if 2 <= abs(date_diff) % 10 <= 4 else "дней"
 
 # Если разница отрицательная, то задача просрочена на date_diff дней, если положительна до задачи date_diff дней.
-# Так лучше же не делать? Тяжело читаемо 
+# Так лучше же не делать? Тяжело читаемо
 # print(f"Задача просрочена на {abs(date_diff)} {day_form}.") if date_diff < 0 else print(f"Крайний срок через {date_diff} {day_form}.") if date_diff >0 else print(f"Крайний срок сегодня.")
 if date_diff < 0:
     print(f"Задача просрочена на {abs(date_diff)} {day_form}.")
